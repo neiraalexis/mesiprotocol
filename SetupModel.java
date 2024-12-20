@@ -9,7 +9,7 @@ import sketchMesi.Socket;
 
 /**
  *
- * @author Alexis Neira
+ * @author Alexis Neira  Garcia
  */
 public class SetupModel {
 

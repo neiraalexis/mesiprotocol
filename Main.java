@@ -9,7 +9,7 @@ import hadware.Memoria;
 import hadware.Procesador;
 
 /**
- *@author Alexis Neira García
+ *@author Alexis Neira Garcia
  */
 public class Main extends PApplet {
 
