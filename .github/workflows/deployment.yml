@@ -45,6 +45,7 @@ jobs:
   tf_plan:
     name: Terraform Plan 📜
     runs-on: ubuntu-latest
+    outputs: 
       AWS_ACCOUNT_ID: ${{ steps.set_env.outputs.AWS_ACCOUNT_ID }}
       AWS_REGION: ${{ steps.set_env.outputs.AWS_REGION }}
     steps:
