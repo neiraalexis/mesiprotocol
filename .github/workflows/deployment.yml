@@ -79,6 +79,7 @@ jobs:
       - name: Debug PR Event Data
         run: |
           echo "${{ toJson(github.event) }}" 
+          echo ${{github.event.pull_request.merged}}
 
   tf_apply:
     name: Terraform Apply 🚀
