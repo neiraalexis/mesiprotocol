@@ -29,12 +29,7 @@ env:
   AWS_DATA_DEV: '111'
   AWS_ROLE: github-runner-terraform-role
   TF_VERSION: "0.12.28"
-  environment: ${{ 
-    github.event.inputs.environment || 
-    (github.ref_name == 'main' && 'production') || 
-    (github.ref_name == 'test' && 'test') || 
-    'development' 
-  }}
+  environment: ${{ github.event.inputs.environment || github.ref_name == 'main' && 'production' || github.ref_name == 'test' && 'test' || 'development' }}
 
 jobs:
   lint:
