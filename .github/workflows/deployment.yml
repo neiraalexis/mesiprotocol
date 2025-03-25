@@ -1,0 +1,84 @@
+name: ipeline-deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        type: choice
+        default: dev
+        options:
+          - dev
+          - test
+          - master
+ 
+  pull_request:
+    branches:
+      - dev
+      - test
+      - master
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  id-token: write
+  contents: read 
+
+env:
+  AWS_DATA_PROD: '222'
+  AWS_DATA_DEV: '111'
+  AWS_ROLE: github-runner-terraform-role
+  environment: ${{ github.event.inputs.environment || github.ref_name == 'main' && 'production' || github.ref_name == 'test' && 'test' || 'development' }}
+  TF_VERSION: "0.12.28"
+
+jobs:
+  lint:
+    runs-on: [self-hosted, nodejs18-tqe-ubuntu20]
+    if: github.event.action != 'closed'
+    defaults:
+      run:
+        shell: bash
+    steps:
+
+      - name: Run TFLint 📏
+        run: |
+            echo TFLint
+
+
+  tf_plan:
+    name: Terraform Plan 📜
+    runs-on: [self-hosted, nodejs18-tqe-ubuntu20]
+    if: github.event.action != 'closed'
+    needs: lint
+    outputs:      
+      AWS_ACCOUNT_ID: ${{ steps.set_env.outputs.AWS_ACCOUNT_ID }}
+      AWS_REGION: ${{ steps.set_env.outputs.AWS_REGION }}
+    steps:
+      - name: "Set environmental variables"
+        id: set_env
+        run: |
+          echo "AWS_ACCOUNT_ID=${{ env.environment == 'production' && env.AWS_DATA_PROD || env.AWS_DATA_DEV }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ env.environment == 'production' && 'us-east-1' || env.environment == 'test' && 'us-east-1' || 'us-west-2' }}" >> $GITHUB_ENV
+          echo "AWS_ACCOUNT_ID=${{ env.environment == 'production' && env.AWS_DATA_PROD || env.AWS_DATA_DEV }}" >> "$GITHUB_OUTPUT"
+          echo "AWS_REGION=${{ (env.environment == 'production' || env.environment == 'test') && 'us-east-1' || 'us-west-2' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout Repository 🛎️
+        run: |
+            echo TFLint
+
+   
+  tf_apply:
+    name: Terraform Apply 🚀
+    runs-on: [self-hosted, nodejs18-tqe-ubuntu20]
+    needs: tf_plan
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
+    steps:  
+      - name: Terraform Plan 📜
+        run: |
+            echo  Plain
+            
+
+      - name: Terraform Apply 🚀
+        run: |
+           echo  init
+      
