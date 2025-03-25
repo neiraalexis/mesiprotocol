@@ -1,4 +1,4 @@
-name: ipeline-deployment
+name: pipeline-deployment
 
 on:
   workflow_dispatch:
@@ -28,26 +28,23 @@ env:
   AWS_DATA_PROD: '222'
   AWS_DATA_DEV: '111'
   AWS_ROLE: github-runner-terraform-role
-  environment: ${{ github.event.inputs.environment || github.ref_name == 'main' && 'production' || github.ref_name == 'test' && 'test' || 'development' }}
   TF_VERSION: "0.12.28"
+  environment: ${{ github.event.inputs.environment || github.ref_name == 'main' && 'production' || github.ref_name == 'test' && 'test' || 'development' }}
 
 jobs:
   lint:
-    runs-on: [self-hosted, nodejs18-tqe-ubuntu20]
+    runs-on: ubuntu-latest
     if: github.event.action != 'closed'
     defaults:
       run:
         shell: bash
     steps:
-
       - name: Run TFLint 📏
-        run: |
-            echo TFLint
-
+        run: echo "Running TFLint"
 
   tf_plan:
     name: Terraform Plan 📜
-    runs-on: [self-hosted, nodejs18-tqe-ubuntu20]
+    runs-on: ubuntu-latest
     if: github.event.action != 'closed'
     needs: lint
     outputs:      
@@ -57,28 +54,41 @@ jobs:
       - name: "Set environmental variables"
         id: set_env
         run: |
-          echo "AWS_ACCOUNT_ID=${{ env.environment == 'production' && env.AWS_DATA_PROD || env.AWS_DATA_DEV }}" >> $GITHUB_ENV
-          echo "AWS_REGION=${{ env.environment == 'production' && 'us-east-1' || env.environment == 'test' && 'us-east-1' || 'us-west-2' }}" >> $GITHUB_ENV
-          echo "AWS_ACCOUNT_ID=${{ env.environment == 'production' && env.AWS_DATA_PROD || env.AWS_DATA_DEV }}" >> "$GITHUB_OUTPUT"
-          echo "AWS_REGION=${{ (env.environment == 'production' || env.environment == 'test') && 'us-east-1' || 'us-west-2' }}" >> "$GITHUB_OUTPUT"
+          if [ "${{ env.environment }}" == "production" ]; then
+            echo "AWS_ACCOUNT_ID=${{ env.AWS_DATA_PROD }}" >> $GITHUB_ENV
+            echo "AWS_ACCOUNT_ID=${{ env.AWS_DATA_PROD }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "AWS_ACCOUNT_ID=${{ env.AWS_DATA_DEV }}" >> $GITHUB_ENV
+            echo "AWS_ACCOUNT_ID=${{ env.AWS_DATA_DEV }}" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ "${{ env.environment }}" == "production" ] || [ "${{ env.environment }}" == "test" ]; then
+            echo "AWS_REGION=us-east-1" >> $GITHUB_ENV
+            echo "AWS_REGION=us-east-1" >> "$GITHUB_OUTPUT"
+          else
+            echo "AWS_REGION=us-west-2" >> $GITHUB_ENV
+            echo "AWS_REGION=us-west-2" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Checkout Repository 🛎️
-        run: |
-            echo TFLint
+        uses: actions/checkout@v3
 
-   
+  tf_swbug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug PR Event Data
+        run: |
+          echo "${{ toJson(github.event) }}" 
+          echo ${{github.event.pull_request.merged}}
+
   tf_apply:
     name: Terraform Apply 🚀
-    runs-on: [self-hosted, nodejs18-tqe-ubuntu20]
+    runs-on: ubuntu-latest
     needs: tf_plan
     if: github.event.action == 'closed' && github.event.pull_request.merged == true
     steps:  
       - name: Terraform Plan 📜
-        run: |
-            echo  Plain
-            
+        run: echo "Executing Terraform Plan"
 
       - name: Terraform Apply 🚀
-        run: |
-           echo  init
-      
+        run: echo "Applying Terraform Changes"
