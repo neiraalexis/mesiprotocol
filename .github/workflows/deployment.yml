@@ -73,6 +73,13 @@ jobs:
       - name: Checkout Repository 🛎️
         uses: actions/checkout@v3
 
+  tf_swbug:
+    runs-on: [self-hosted, nodejs18-tqe-ubuntu20]
+    steps:
+      - name: Debug PR Event Data
+        run: |
+          echo "${{ toJson(github.event) }}" 
+
   tf_apply:
     name: Terraform Apply 🚀
     runs-on: ubuntu-latest
