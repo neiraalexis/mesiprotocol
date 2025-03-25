@@ -1,4 +1,4 @@
-name: ipeline-deployment
+name: pipeline-deployment
 
 on:
   workflow_dispatch:
