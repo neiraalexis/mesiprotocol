@@ -45,9 +45,6 @@ jobs:
   tf_plan:
     name: Terraform Plan 📜
     runs-on: ubuntu-latest
-    needs: [lint]
-    continue-on-error: true
-    outputs: 
       AWS_ACCOUNT_ID: ${{ steps.set_env.outputs.AWS_ACCOUNT_ID }}
       AWS_REGION: ${{ steps.set_env.outputs.AWS_REGION }}
     steps:
@@ -70,12 +67,17 @@ jobs:
             echo "AWS_REGION=us-west-2" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Checkout Repository 🛎️
+        uses: actions/checkout@v3
+
+
   tf_apply:
     name: Terraform Apply 🚀
     runs-on: ubuntu-latest
-    needs: tf_plan
     if:  github.event.action == 'closed' && github.event.pull_request.merged == true
     steps:  
- 
+      - name: Terraform Plan 📜
+        run: echo "Executing Terraform Plan"
+
       - name: Terraform Apply 🚀
         run: echo "Applying Terraform Changes"
