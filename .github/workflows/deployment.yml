@@ -46,7 +46,7 @@ jobs:
     name: Terraform Plan 📜
     runs-on: ubuntu-latest
     needs: lint
-    if: always() && (needs.lint.result == 'success' || needs.lint.result == 'skipped')
+    if: ${{ !cancelled() && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
 
     outputs: 
       AWS_ACCOUNT_ID: ${{ steps.set_env.outputs.AWS_ACCOUNT_ID }}
@@ -75,7 +75,7 @@ jobs:
     name: Terraform Apply 🚀
     runs-on: ubuntu-latest
     needs: tf_plan
-    if: always() && (github.event.action == 'closed' && github.event.pull_request.merged == true)
+    if: ${{ !cancelled() && (github.event.action == 'closed' && github.event.pull_request.merged == true) }}
     steps:  
  
       - name: Terraform Apply 🚀
