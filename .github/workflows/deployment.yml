@@ -73,10 +73,11 @@ jobs:
           
       - name: "Set log"
         id: set_log
-        run: |            
-            echo ${{needs.tf_plan.result }}
-            echo${{ github.event.action }}
-            echo ${{ github.event.pull_request.merged }} 
+        run: |
+            echo "${{ !cancelled()}}  "          
+            echo " ${{needs.tf_plan.result }}"
+            echo "${{ github.event.action }}"
+            echo "${{ github.event.pull_request.merged }} "
       
   tf_apply:
     name: Terraform Apply 🚀
