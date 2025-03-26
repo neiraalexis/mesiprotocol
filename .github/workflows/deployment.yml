@@ -85,7 +85,7 @@ jobs:
     if: |
       ${{ !cancelled() }} && 
       needs.tf_plan.result == 'success' &&
-      (github.event.action == 'closed' && github.event.pull_request.merged == true)
+      github.event.action == 'closed' && github.event.pull_request.merged == true
     steps:  
  
       - name: Terraform Apply 🚀
