@@ -70,12 +70,23 @@ jobs:
             echo "AWS_REGION=us-west-2" >> $GITHUB_ENV
             echo "AWS_REGION=us-west-2" >> "$GITHUB_OUTPUT"
           fi
+          
+      - name: "Set log"
+        id: set_log
+        run: |
+            echo " ${{needs.tf_plan.result }}"
+            echo "${{ github.event.action }}"
+            echo "${{ github.event.pull_request.merged }} "            
+            exit 1
       
   tf_apply:
     name: Terraform Apply 🚀
     runs-on: ubuntu-latest
     needs: tf_plan
-    if: ${{ !cancelled() && (github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+    if: ${{ !cancelled() && 
+      needs.tf_plan.result == 'success' &&
+      github.event.action == 'closed' && 
+      github.event.pull_request.merged == true }}
     steps:  
  
       - name: Terraform Apply 🚀
