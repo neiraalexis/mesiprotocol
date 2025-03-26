@@ -76,7 +76,8 @@ jobs:
         run: |
             echo " ${{needs.tf_plan.result }}"
             echo "${{ github.event.action }}"
-            echo "${{ github.event.pull_request.merged }} "
+            echo "${{ github.event.pull_request.merged }} "            
+            exit 1
       
   tf_apply:
     name: Terraform Apply 🚀
