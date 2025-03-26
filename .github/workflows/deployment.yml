@@ -73,8 +73,7 @@ jobs:
           
       - name: "Set log"
         id: set_log
-        run: |
-            echo ${{ !cancelled()}}            
+        run: |            
             echo ${{needs.tf_plan.result }}
             echo${{ github.event.action }}
             echo ${{ github.event.pull_request.merged }} 
