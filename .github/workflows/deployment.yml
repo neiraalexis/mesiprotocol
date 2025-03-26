@@ -70,7 +70,7 @@ jobs:
             echo "AWS_REGION=us-west-2" >> $GITHUB_ENV
             echo "AWS_REGION=us-west-2" >> "$GITHUB_OUTPUT"
           fi
-
+      
   tf_apply:
     name: Terraform Apply 🚀
     runs-on: ubuntu-latest
