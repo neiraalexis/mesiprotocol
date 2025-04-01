@@ -32,7 +32,7 @@ env:
   environment: |-
     ${{ github.event.inputs.environment 
         || (github.event_name == 'pull_request' && (github.base_ref == 'master' && 'production' || github.base_ref))
-        || (github.event_name == 'workflow_dispatch' && (github.base_ref == 'master' && 'production' || github.base_ref)) 
+        || (github.event_name == 'workflow_dispatch' && (github.event.inputs.environment == 'master' && 'production' || github.event.inputs.environment)) 
         || (github.base_ref == 'master' && 'production')
         || 'development' }}
 jobs:
