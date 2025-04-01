@@ -31,8 +31,8 @@ env:
   TF_VERSION: "0.12.28"
   environment: |-
     ${{ github.event.inputs.environment 
-        || (github.event_name == 'pull_request' && (github.ref_name == 'main' && 'production' || github.ref_name))
-        || (github.event_name == 'workflow_dispatch' && (github.ref_name == 'main' && 'production' || github.ref_name)) 
+        || (github.event_name == 'pull_request' && (github.base_ref == 'main' && 'production' || github.base_ref))
+        || (github.event_name == 'workflow_dispatch' && (github.base_ref == 'main' && 'production' || github.base_ref)) 
         || (github.base_ref == 'main' && 'production')
         || 'development' }}
 jobs:
