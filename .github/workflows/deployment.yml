@@ -30,8 +30,7 @@ env:
   AWS_ROLE: github-runner-terraform-role
   TF_VERSION: "0.12.28"
   environment: |-
-    ${{ github.event.inputs.environment 
-        || (github.event_name == 'pull_request' && (github.base_ref == 'master' && 'production' || github.base_ref))
+    ${{ (github.event_name == 'pull_request' && (github.base_ref == 'master' && 'production' || github.base_ref))
         || (github.event_name == 'workflow_dispatch' && (github.event.inputs.environment == 'master' && 'production' || github.event.inputs.environment)) 
         || (github.base_ref == 'master' && 'production')
         || 'development' }}
