@@ -31,11 +31,10 @@ env:
   TF_VERSION: "0.12.28"
   environment: |-
     ${{ github.event.inputs.environment 
-      || (github.event_name == 'workflow_dispatch' && github.ref_name)
-      || (github.ref_name == 'master' && 'production') 
-      || (github.ref_name == 'test' && 'test') 
-      || (github.event_name == 'pull_request' && github.base_ref) 
-      || 'development' }}
+        || (github.event_name == 'pull_request' && github.base_ref) 
+        || (github.ref == 'refs/heads/main' && 'production') 
+        || (github.ref == 'refs/heads/test' && 'test') 
+        || 'development' }}
 jobs:
   lint:
     runs-on: ubuntu-latest
